@@ -17,34 +17,32 @@ ev3 = EV3Brick()
 
 
 # Write your program here.
-rMotor = classMotor(Port.D, positive_direction=Direction.CLOCKWISE)
-lMotor = classMotor(Port.B, positive_direction=Direction.ANTICLOCKWISE)
+rMotor = Motor(Port.C, positive_direction=Direction.CLOCKWISE) # left colour sensor is the front
+lMotor = Motor(Port.D, positive_direction=Direction.CLOCKWISE) # right
+
+armMotor = Motor(Port.B, positive_direction=Direction.CLOCKWISE)
+rotateMotor = Motor(Port.A, positive_direction=Direction.CLOCKWISE)
 
 # Initialize the color sensor.
 rSensor = ColorSensor(Port.S3)
 lSensor = ColorSensor(Port.S4)
 
 # Initialize the drive base.
-robot = DriveBase(left_motor, right_motor, wheel_diameter=55.5, axle_track=104)
+robot = DriveBase(lMotor, rMotor, wheel_diameter=88.0, axle_track=187)
 
-# Calculate the light threshold. Choose values based on your measurements.
-BLACK = 9
-WHITE = 85
-threshold = (BLACK + WHITE) / 2
+armMotor.reset_angle(0)
+armMotor.run_target(10, -90, then=Stop.HOLD, wait=True)
 
-# Set the drive speed at 100 millimeters per second.
+
 DRIVE_SPEED = 100
 
-# Set the gain of the proportional line controller. This means that for every
-# percentage point of light deviating from the threshold, we set the turn
-# rate of the drivebase to 1.2 degrees per second.
-
-# For example, if the light value deviates from the threshold by 10, the robot
-# steers at 10*1.2 = 12 degrees per second.
 PROPORTIONAL_GAIN = 2.3
 
-# Start following the line endlessly.
-while True:
+robot.settings(250, 100, 30, 10)
+# robot.straight(150)
+
+
+for i in range(100):
     # Calculate the deviation from the threshold.
     deviation = rSensor.reflection() - lSensor.reflection()
 
